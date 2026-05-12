@@ -12,7 +12,6 @@
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{float}
@@ -24,7 +23,7 @@
 	language=Python,
 	basicstyle=\ttfamily\footnotesize,
 	keywordstyle=\color{blue},
-	commentstyle=\color{teal},
+	commentstyle=\color{green},
 	stringstyle=\color{magenta},
 	showstringspaces=false,
 	breaklines=true,
@@ -42,6 +41,7 @@
 % \urlstyle{rm}
 %
 \usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage{hyperref}
 \usepackage[style=lncs, backend=biber, natbib=true]{biblatex}
 \usepackage{lipsum}
@@ -72,7 +72,7 @@ Vietnam National University, Ho Chi Minh City, Vietnam
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-In this paper, we compare the performance of Large Language Models (LLMs) and traditional machine learning models on a complex classification task in education: predicting students' final academic outcomes. We evaluate two LLMs prompted using different techniques, benchmarked against a variety of traditional machine learning models. Our results indicate that despite their complexity and size, LLMs heavily underperform compared to traditional models in this specific task. These findings suggest that general-purpose LLMs, whose main strength is in natural language processing, are not as suitable for structured classification tasks as traditional counterparts. In our future work, we aim to explore and further validate the reasons behind this discrepancy, and investigate potential improvements in prompting techniques or model architectures to enhance the performance of LLMs-based approaches in classification tasks.
+In this paper, we compare the performance of Large Language Models (LLMs) and traditional machine learning models on a complex classification task in education: predicting students' final academic outcomes. We evaluate two LLMs prompted using different techniques, benchmarked against a variety of traditional machine learning models. Our results indicate that despite their complexity and size, LLMs heavily underperform compared to traditional models in this specific task. These findings suggest that general-purpose LLMs, whose main strength is in natural language processing, are not as suitable for structured classification tasks as traditional counterparts. In our future work, we aim to explore and further validate the reasons behind this discrepancy, and investigate potential improvements in prompting techniques or model architectures to enhance the performance of LLM-based approaches in classification tasks.
 \keywords{Large Language Models \and Traditional Machine Learning Models \and Classification problem \and Prompting techniques \and Educational context}
 \end{abstract}
 %
@@ -80,6 +80,8 @@ In this paper, we compare the performance of Large Language Models (LLMs) and tr
 \newpage
 
 \begin{multicols}{2}
+\sloppy
+\raggedright
 \input{Introduction.tex}
 \input{Background.tex}
 \input{RelatedWorks.tex}
