@@ -52,9 +52,9 @@
 
 \begin{document}
 %
-\title{A Comparison between Large Language Models and Traditional Predictive Models in a Complex Classification Task}
+\title{Can LLMs Generalize to Structured Classification Tasks? A Comparative Analysis with Traditional Machine Learning Models in an Educational Context}
 %
-%\titlerunning{Abbreviated paper title}
+\titlerunning{Can LLMs Generalize in Structured Classification Tasks?}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
@@ -72,8 +72,8 @@ Vietnam National University, Ho Chi Minh City, Vietnam
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-In this paper, we compare the performance of Large Language Models (LLMs) and traditional machine learning models on a complex classification task in education: predicting students' final academic outcomes. We evaluate two LLMs prompted using different techniques, benchmarked against a variety of traditional machine learning models. Our results indicate that despite their complexity and size, LLMs heavily underperform compared to traditional models in this specific task. These findings suggest that general-purpose LLMs, whose main strength is in natural language processing, are not as suitable for structured classification tasks as traditional counterparts. In our future work, we aim to explore and further validate the reasons behind this discrepancy, and investigate potential improvements in prompting techniques or model architectures to enhance the performance of LLM-based approaches in classification tasks.
-\keywords{Large Language Models \and Traditional Machine Learning Models \and Classification problem \and Prompting techniques \and Educational context}
+While Large Language Models (LLMs) excel in natural language processing, their ability to generalize to structured, non-linguistic tasks remains uncertain. This paper investigates this gap by comparing general-purpose LLMs and traditional machine learning models in a specific educational context--predicting students' final academic outcomes--using the Open University Learning Analytics Dataset (OULAD). To assess baseline generalization without task-specific adaptation, we deliberately exclude fine-tuning and retrieval-augmented generation. Instead, we evaluate two open-weight, small-size LLMs, Qwen-2.5-3B and LLaMA-3-8B, interpreting serialized JSON tabular data using zero-shot, one-shot, and five-shot prompting. These are benchmarked against seven hyperparameter-tuned traditional models, including Random Forest and Gradient Boosting. Our results demonstrate a severe performance gap: traditional ensemble methods significantly outperformed the LLMs, with the best-performing LLM peforming no better than chance. These findings highlight that current general-purpose LLMs struggle to interpret numerical feature vectors, making them currently unsuitable for complex and tabularized data compared to traditional classifiers. Future research should explore domain adaptation techniques or architectural modifications to bridge this modality gap. 
+\keywords{Large Language Models \and Traditional Machine Learning Models \and Classification problem \and Generalization \and Education}
 \end{abstract}
 %
 %
