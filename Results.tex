@@ -18,12 +18,12 @@ MLP Classifier & -- & 0.678 & 0.676 \\
 ELM Classifier & -- & 0.645 & 0.630 \\
 \addlinespace
 \multicolumn{4}{l}{\textbf{LLMs}} \\
-Qwen2.5-3B & 0-shot & 0.218 & 0.297 \\
-Qwen2.5-3B & 1-shot & 0.387 & 0.562 \\
-Qwen2.5-3B & 5-shot & 0.306 & 0.377 \\
-Meta-Llama3-8B & 0-shot & 0.280 & 0.341 \\
-Meta-Llama3-8B & 1-shot & 0.392 & 0.509 \\
-Meta-Llama3-8B & 5-shot & 0.481 & 0.494 \\
+Qwen-2.5-3B & 0-shot & 0.218 & 0.297 \\
+Qwen-2.5-3B & 1-shot & 0.387 & 0.562 \\
+Qwen-2.5-3B & 5-shot & 0.306 & 0.377 \\
+LLaMA-3-8B & 0-shot & 0.280 & 0.341 \\
+LLaMA-3-8B & 1-shot & 0.392 & 0.509 \\
+LLaMA-3-8B & 5-shot & 0.481 & 0.494 \\
 \bottomrule
 \end{tabular}
 \caption{Summary of traditional ML and LLM performance on the test set (Macro F1 and Balanced Accuracy).}
@@ -47,7 +47,7 @@ Meta-Llama3-8B & 5-shot & 0.481 & 0.494 \\
 \begin{multicols}{2}
 
 \subsection{Traditional Predictive Models}
-Various traditional model architectures are implemented. The evaluated models are Random Forest, Decision Tree, Support Vector Machine, Gradient Boosting, K-Nearest Neighbors, Extreme Learning Machine, and Multi-layer Perceptron. The performance of each model is measured using plain accuracy, balanced accuracy, and F1 score. The accuracy of a model can be calculated as
+Various traditional model architectures are implemented. The evaluated models are Random Forest, Decision Tree, Support Vector Machine, Gradient Boosting, K-Nearest Neighbors, Extreme Learning Machine, and Multilayer Perceptron. The performance of each model is measured using plain accuracy, balanced accuracy, and F1 score. The accuracy of a model can be calculated as
 \[
 	\frac{\text{True Positive} + \text{True Negative}}{\text{Total Predictions}}.
 \]
@@ -70,11 +70,11 @@ As shown in Fig.~\ref{fig:tradml-performance}, the model performance plot summar
 	\begin{minipage}{0.5\textwidth}
 		\includegraphics[width=\textwidth]{code/plots/llama_metric_technique_comparison.png}
 	\end{minipage}
-	\caption{Prompting-technique comparison for Qwen2.5-3B (left) and Meta-Llama3-8B (right), using Macro F1 and Balanced Accuracy.}
+	\caption{Prompting-technique comparison for Qwen-2.5-3B (left) and LLaMA-3-8B (right), using Macro F1 and Balanced Accuracy.}
     \label{fig:llm-prompting}
 \end{figure}
-We report Macro F1 for LLMs. Macro F1 treats each class as equally important by averaging the per-class F1 scores. This is particularly useful in our case, where the dataset is imbalanced, and we want to ensure that performance on minority classes (e.g., at-risk students) is not overshadowed by performance on majority classes (e.g., passing students). As shown in Fig.~\ref{fig:llm-prompting}, the best-performing LLM configuration is Meta-Llama3-8B with 5-shot prompting, which achieves a Macro F1 of 0.481 and a balanced accuracy of 0.494. Qwen2.5-3B performs best with 1-shot prompting (Macro F1 = 0.387; balanced accuracy = 0.562). Overall, Macro F1 values range from 0.218 to 0.481 and balanced accuracies range from 0.297 to 0.562.
+We report Macro F1 for LLMs. Macro F1 treats each class as equally important by averaging the per-class F1 scores. This is particularly useful in our case, where the dataset is imbalanced, and we want to ensure that performance on minority classes (e.g., at-risk students) is not overshadowed by performance on majority classes (e.g., passing students). As shown in Fig.~\ref{fig:llm-prompting}, the best-performing LLM configuration is LLaMA-3-8B with 5-shot prompting, which achieves a Macro F1 of 0.481 and a balanced accuracy of 0.494. Qwen-2.5-3B performs best with 1-shot prompting (Macro F1 = 0.387; balanced accuracy = 0.562). Overall, Macro F1 values range from 0.218 to 0.481 and balanced accuracies range from 0.297 to 0.562.
 
-Even the best-performing LLM configuration (Meta-Llama3-8B with 5-shot prompting) achieves a Macro F1 of only 0.481, which is lower than the lowest-scoring traditional model (KNN with a Macro F1 of 0.601). This suggests that the bottleneck is not model capacity---LLaMA-3-8B has 8 billion parameters compared to KNN's zero learned parameters---but rather the mismatch between the LLM pretraining distribution (natural language) and the input modality (serialized numerical feature vectors).
+Even the best-performing LLM configuration (LLaMA-3-8B with 5-shot prompting) achieves a Macro F1 of only 0.481, which is lower than the lowest-scoring traditional model (KNN with a Macro F1 of 0.601). This suggests that the bottleneck is not model capacity---LLaMA-3-8B has 8 billion parameters compared to KNN's zero learned parameters---but rather the mismatch between the LLM pretraining distribution (natural language) and the input modality (serialized numerical feature vectors).
 
 This gap also contextualizes the practical implications for HEIs: at current scales, deploying general-purpose LLMs for student outcome classification without fine-tuning would produce predictions no better than a majority-class baseline, rendering them unsuitable for early-warning systems where per-class sensitivity is critical.
