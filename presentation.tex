@@ -95,7 +95,7 @@ $\implies $Hypothesis: LLMs are not designed for classification tasks, especiall
 \end{itemize}
 
 \vspace{0.3cm}
-\textbf{K-Nearest Neighbors (KNN)}
+\textbf{$k$-Nearest Neighbors ($k$-NN)}
 \begin{itemize}
     \item Non-parametric; classifies by majority of $k$ nearest neighbors
     \item Distance metric: Euclidean (default)
@@ -227,14 +227,14 @@ VLE Interactions & Clickstream data (sum\_click per site) & 10{,}655{,}280 \\
 
 % ---- Slide 7: Methodology -- Traditional Models ----
 \begin{frame}{Methodology: Traditional Models}
-\textbf{Seven models evaluated:} RF, SVM, GB, DT (CART + C5.0), KNN, ELM, MLP.
+\textbf{Seven models evaluated:} RF, SVM, GB, DT (CART + C5.0), $k$-NN, ELM, MLP.
 
 \vspace{0.3cm}
 \textbf{Selection rationale:}
 \begin{itemize}
     \item RF \& SVM: top classifiers per Delgado et al.'s systematic review
     \item DT, GB, ELM, MLP: strong performers in educational data mining literature
-    \item KNN: baseline to test if simple distance-based methods suffice
+    \item $k$-NN: baseline to test if simple distance-based methods suffice
 \end{itemize}
 
 \vspace{0.3cm}
@@ -297,7 +297,7 @@ Decision Tree & 0.7188 & 0.6850 & 0.6752 \\
 Random Forest & 0.7612 & \textbf{0.7193} & 0.7199 \\
 Gradient Boosting & \textbf{0.7647} & 0.7178 & \textbf{0.7220} \\
 Support Vector Machine & 0.7400 & 0.6354 & 0.6524 \\
-K-Nearest Neighbors & 0.6872 & 0.5954 & 0.6006 \\
+$k$-Nearest Neighbors & 0.6872 & 0.5954 & 0.6006 \\
 MLP Classifier & 0.7274 & 0.6760 & 0.6785 \\
 ELM Classifier & 0.7289 & 0.6300 & 0.6448 \\
 \bottomrule

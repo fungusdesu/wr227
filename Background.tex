@@ -1,7 +1,7 @@
 \section{Background}
 \subsection{Traditional Machine Learning Models}
 
-This paper uses seven traditional machine learning models for the classification task: Random Forest, Support Vector Machine, Gradient Boosting, Decision Tree, K-Nearest Neighbors, Extreme Learning Machine (ELM), and Multilayer Perceptron (MLP). The rationale for selecting these models is explained in the Methodology section. Below is a brief introduction to each model.
+This paper uses seven traditional machine learning models for the classification task: Random Forest, Support Vector Machine, Gradient Boosting, Decision Tree, $k$-Nearest Neighbors, Extreme Learning Machine (ELM), and Multilayer Perceptron (MLP). The rationale for selecting these models is explained in the Methodology section. Below is a brief introduction to each model.
 
 \subsubsection{Random Forest}
 
@@ -23,9 +23,9 @@ GB is known for its high predictive accuracy and is widely used in various appli
 
 Decision Tree (DT) is a supervised learning model that recursively partitions the feature space into regions that are as homogeneous as possible with respect to the target label. At each internal node, the algorithm selects a feature (and a threshold for numerical features) that maximizes an impurity reduction criterion such as Gini impurity or information gain. Predictions are obtained by following the decision rules from the root to a leaf and outputting the majority class for classification tasks. Decision trees are interpretable and can capture non-linear decision boundaries, but they may overfit without appropriate regularization (e.g., maximum depth, minimum samples per split/leaf, or pruning).
 
-\subsubsection{K-Nearest Neighbors}
+\subsubsection{$k$-Nearest Neighbors}
 
-K-Nearest Neighbors (KNN) is a non-parametric, instance-based learning algorithm that classifies a data point based on the majority class among its $k$ nearest neighbors in feature space \cite{Cover1967}. Distance between data points is typically measured by Euclidean distance, although other measures such as Pearson or Spearman distance can also be used \cite{Jaskowiak2011}. The choice of the algorithm's sole hyperparameter, $k$, is crucial for performance. A larger value of $k$ can make the model more robust to noise, though it may blur interclass boundaries \cite{Everitt2011}. Due to its simplicity, KNN's accuracy can be significantly affected by the choice of $k$ and the nature of the data, and it often requires feature scaling to ensure that all features contribute equally to the distance calculations \cite{Nigsch2006}. KNN is noted for its strong consistency: as the dataset size increases, the probability of KNN making an error converges to no worse than twice the Bayes error rate, which is the lowest possible error rate for any classifier \cite{Cover1967}.
+$k$-Nearest Neighbors ($k$-NN) is a non-parametric, instance-based learning algorithm that classifies a data point based on the majority class among its $k$ nearest neighbors in feature space \cite{Cover1967}. Distance between data points is typically measured by Euclidean distance, although other measures such as Pearson or Spearman distance can also be used \cite{Jaskowiak2011}. The choice of the algorithm's sole hyperparameter, $k$, is crucial for performance. A larger value of $k$ can make the model more robust to noise, though it may blur interclass boundaries \cite{Everitt2011}. Due to its simplicity, $k$-NN's accuracy can be significantly affected by the choice of $k$ and the nature of the data, and it often requires feature scaling to ensure that all features contribute equally to the distance calculations \cite{Nigsch2006}. $k$-NN is noted for its strong consistency: as the dataset size increases, the probability of $k$-NN making an error converges to no worse than twice the Bayes error rate, which is the lowest possible error rate for any classifier \cite{Cover1967}.
 
 \subsubsection{Extreme Learning Machine}
 

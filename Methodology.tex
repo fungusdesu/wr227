@@ -18,7 +18,7 @@ We utilized the Open University Learning Analytics Dataset (OULAD), described in
 \begin{table}[H]
     \centering
     \small
-    \setlength{\tabcolsep}{2pt}
+    \setlength{\tabcolsep}{1pt}
     \renewcommand{\arraystretch}{1.18}
     \begin{tabularx}{\linewidth}{|l|l|c|X|}
     \hline
@@ -38,7 +38,7 @@ We utilized the Open University Learning Analytics Dataset (OULAD), described in
 \begin{table}[H]
     \centering
     \small
-    \setlength{\tabcolsep}{2pt}
+    \setlength{\tabcolsep}{1pt}
     \renewcommand{\arraystretch}{1.18}
     \begin{tabularx}{\linewidth}{|l|l|c|X|}
     \hline
@@ -53,7 +53,7 @@ We utilized the Open University Learning Analytics Dataset (OULAD), described in
 \begin{table}[H]
     \centering
     \small
-    \setlength{\tabcolsep}{2pt}
+    \setlength{\tabcolsep}{1pt}
     \renewcommand{\arraystretch}{1.18}
     \begin{tabularx}{\linewidth}{|l|l|c|X|}
     \hline
@@ -81,27 +81,28 @@ After preprocessing, we aggregate the three groups of features using \texttt{id\
 Next, we split the dataset into training and testing sets, with an 80--20 split. We use \texttt{sklearn}'s \texttt{SMOTE} to address class imbalance in the training set, which is a common issue in educational datasets where certain outcomes (e.g., withdrawal) may be more prevalent than others. This increases the size of the training set to 39,556 records, which raises the total dataset size to 46,075 records.
 
 \end{multicols}
+
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL1_input_tables.png}
+    \includegraphics[width=0.8\textwidth]{figures/PP_pipeline_LBL1_input_tables.png}
     \caption{Preprocessing pipeline (Stage 1): input tables.}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL2_feature_preparation.png}
+    \includegraphics[width=0.8\textwidth]{figures/PP_pipeline_LBL2_feature_preparation.png}
     \caption{Preprocessing pipeline (Stage 2): feature preparation.}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL3_prepared_feature_sets.png}
+    \includegraphics[width=0.8\textwidth]{figures/PP_pipeline_LBL3_prepared_feature_sets.png}
     \caption{Preprocessing pipeline (Stage 3): prepared feature sets.}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL4_final_dataset.png}
+    \includegraphics[width=0.8\textwidth]{figures/PP_pipeline_LBL4_final_dataset.png}
     \caption{Preprocessing pipeline (Stage 4): final dataset construction.}
 \end{figure}
 \begin{multicols}{2}
@@ -110,9 +111,9 @@ Next, we split the dataset into training and testing sets, with an 80--20 split.
 
 \subsubsection{Traditional Machine Learning Models}
 
-In our paper, we utilize seven traditional machine learning models as baselines for comparison with large language models. These models include: Random Forest (RF), Support Vector Machine (SVM), Gradient Boosting (GB), Decision Tree (DT), K-Nearest Neighbors (KNN), Extreme Learning Machine (ELM), and Multilayer Perceptron (MLP).
+In our paper, we utilize seven traditional machine learning models as baselines for comparison with large language models. These models include: Random Forest (RF), Support Vector Machine (SVM), Gradient Boosting (GB), Decision Tree (DT), $k$-Nearest Neighbors ($k$-NN), Extreme Learning Machine (ELM), and Multilayer Perceptron (MLP).
 
-The first two models, RF and SVM, are learning methods identified as top classifiers in Delgado et al.'s systematic review of educational data mining \cite{Delgado2014}. The paper also highlights other strong models, such as DT (C5.0 implementation), GB, ELM, and MLP. A review of the OULAD dataset by Alhakbani and Alnassar \cite{Alhakbani2022} also identifies DT (CART implementation) as a top-performing model in detecting at-risk students. Finally, KNN is also included, due to its simplicity, as we intend to explore if the classification task can be effectively solved using a simple distance-based method.
+The first two models, RF and SVM, are learning methods identified as top classifiers in Delgado et al.'s systematic review of educational data mining \cite{Delgado2014}. The paper also highlights other strong models, such as DT (C5.0 implementation), GB, ELM, and MLP. A review of the OULAD dataset by Alhakbani and Alnassar \cite{Alhakbani2022} also identifies DT (CART implementation) as a top-performing model in detecting at-risk students. Finally, $k$-NN is also included, due to its simplicity, as we intend to explore if the classification task can be effectively solved using a simple distance-based method.
 
 Regarding implementation, all models are run using \texttt{sklearn} libraries. We first run a 5-fold cross-validation on the training set to perform hyperparameter tuning for each model. We then select the best hyperparameters based on the average Macro F1 across folds and train the final model on the entire training set using these hyperparameters.
 
@@ -138,7 +139,7 @@ Support Vector Machine & \texttt{StandardScaler()} + \texttt{SVC(C=0.78475997035
 \hline
 Gradient Boosting & \texttt{subsample=1.0}, \texttt{n\_estimators=100}, \texttt{min\_samples\_split=2}, \texttt{min\_samples\_leaf=4}, \texttt{max\_features=None}, \texttt{max\_depth=5}, \texttt{learning\_rate=0.2} \\
 \hline
-K-NN & \texttt{StandardScaler()} + \texttt{KNeighborsClassifier (n\_neighbors=7, weights='uniform', p=1, metric='minkowski', leaf\_size=50)} \\
+$k$-NN & \texttt{StandardScaler()} + \texttt{KNeighborsClassifier (n\_neighbors=7, weights='uniform', p=1, metric='minkowski', leaf\_size=50)} \\
 \hline
 Extreme Learning Machine & \texttt{ELMClassifier(n\_neurons=1000, alpha=0.0001, ufunc='relu')} \\
 \hline
