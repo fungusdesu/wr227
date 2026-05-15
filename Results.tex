@@ -6,7 +6,7 @@
 \centering
 \begin{tabular}{llcc}
 \toprule
-Model & Technique & Macro F1 & Balanced Acc. \\
+Model & Technique & (Macro) F1 & Balanced Acc. \\
 \midrule
 \multicolumn{4}{l}{\textbf{Traditional ML}} \\
 Decision Tree & -- & 0.675 & 0.685 \\
@@ -59,7 +59,7 @@ In addition, the F1-score is also utilized, calculated as the harmonic mean of p
 \[
 	\frac{2 \times \text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}.
 \]
-As shown in Fig.~\ref{fig:tradml-performance}, the model performance plot summarizes the comparative results across all evaluated traditional predictive models. Ensemble methods remain the top performers, with Gradient Boosting and Random Forest achieving the highest Macro F1 scores of 0.722 and 0.720, respectively. Support Vector Machine and Extreme Learning Machine also show competitive performance, while K-Nearest Neighbors has the lowest Macro F1 among the traditional models at 0.601. These results are consistent with existing literature that highlights the effectiveness of ensemble methods in classification tasks, particularly in educational contexts where complex interactions between features are common.
+As shown in Fig.~\ref{fig:tradml-performance}, the model performance plot summarizes the comparative results across all evaluated traditional predictive models. Ensemble methods remain the top performers, with Gradient Boosting and Random Forest achieving the highest F1 scores of 0.722 and 0.720, respectively. Support Vector Machine and Extreme Learning Machine also show competitive performance, while K-Nearest Neighbors has the lowest F1 among the traditional models at 0.601. These results are consistent with existing literature that highlights the effectiveness of ensemble methods in classification tasks, particularly in educational contexts where complex interactions between features are common.
 
 \subsection{Large Language Models}
 \begin{figure}[H]

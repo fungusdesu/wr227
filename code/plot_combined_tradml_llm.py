@@ -16,16 +16,25 @@ def format_llm_label(model: str, technique: str) -> str:
 
 def load_tradml(csv_path: Path) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
-    required = {"Model", "Balanced Accuracy", "Macro F1"}
+    required = {"Model", "Balanced Accuracy"}
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Missing columns in {csv_path}: {sorted(missing)}")
+
+    if "Macro F1" in df.columns:
+        f1_col = "Macro F1"
+    elif " F1" in df.columns:
+        f1_col = " F1"
+    elif "F1" in df.columns:
+        f1_col = "F1"
+    else:
+        raise ValueError(f"Missing F1 column in {csv_path}: ['Macro F1', ' F1', 'F1']")
 
     out = pd.DataFrame(
         {
             "Label": df["Model"].astype(str),
             "Group": "Traditional ML",
-            "F1": df["Macro F1"].astype(float),
+            "F1": df[f1_col].astype(float),
             "Balanced Accuracy": df["Balanced Accuracy"].astype(float),
         }
     )
@@ -34,17 +43,26 @@ def load_tradml(csv_path: Path) -> pd.DataFrame:
 
 def load_llm(csv_path: Path) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
-    required = {"model", "technique", "f1", "balanced_accuracy"}
+    required = {"model", "technique", "balanced_accuracy"}
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Missing columns in {csv_path}: {sorted(missing)}")
+
+    if "(Macro) F1" in df.columns:
+        f1_col = "(Macro) F1"
+    elif "f1" in df.columns:
+        f1_col = "f1"
+    else:
+        raise ValueError(f"Missing F1 column in {csv_path}: ['(Macro) F1', 'f1']")
 
     out = pd.DataFrame(
         {
             "Label": [format_llm_label(m, t) for m, t in zip(df["model"], df["technique"])],
             "Group": "LLM",
-            "F1": df["f1"].astype(float),
+            "F1": df[f1_col].astype(float),
             "Balanced Accuracy": df["balanced_accuracy"].astype(float),
+            "model": df["model"].astype(str),
+            "technique": df["technique"].astype(str),
         }
     )
     return out
@@ -106,6 +124,15 @@ def main() -> None:
 
     tradml_df = load_tradml(tradml_csv)
     llm_df = load_llm(llm_csv)
+
+    model_order = ["qwen", "llama"]
+    technique_order = ["0shot", "1shot", "5shot"]
+    llm_df["model"] = pd.Categorical(llm_df["model"].str.lower(), categories=model_order, ordered=True)
+    llm_df["technique"] = pd.Categorical(
+        llm_df["technique"].str.lower(), categories=technique_order, ordered=True
+    )
+    llm_df = llm_df.sort_values(["model", "technique"], na_position="last")
+    llm_df = llm_df.drop(columns=["model", "technique"]).reset_index(drop=True)
 
     combined = pd.concat([tradml_df, llm_df], ignore_index=True)
     create_plot(combined, output_path)
