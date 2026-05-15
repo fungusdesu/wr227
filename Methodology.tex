@@ -68,7 +68,7 @@ We utilized the Open University Learning Analytics Dataset (OULAD), described in
 \begin{multicols}{2}
 To correctly and effectively classify the students' final results, preprocessing must be done to merge the tables and create a single table containing all the features, keyed according to the \texttt{id\_student} column. In the next subsection, we describe the preprocessing steps taken to achieve this.
 
-We divide the tables into three groups: background (studentInfo), performance (studentAssessment and assessments), and behavior (studentVle, vle, and assessments for cutoff construction). We perform the following preprocessing tasks for each group:
+We divide the tables into three groups: background (\texttt{studentInfo}), performance (\texttt{studentAssessment} and \texttt{assessments}), and behavior (\texttt{studentVle}, \texttt{vle}, and \texttt{assessments} for cutoff construction). We perform the following preprocessing tasks for each group:
 
 \begin{description}
     \item[Background:] We first perform one-hot encoding on the categorical features in the \texttt{studentInfo} table, which include students' gender, region, highest education and disability status. For age and IMD bands, we perform ordinal encoding, as these features have an inherent order.
@@ -114,7 +114,7 @@ In our paper, we utilize seven traditional machine learning models as baselines 
 
 The first two models, RF and SVM, are learning methods identified as top classifiers in Delgado et al.'s systematic review of educational data mining \cite{Delgado2014}. The paper also highlights other strong models, such as DT (C5.0 implementation), GB, ELM, and MLP. A review of the OULAD dataset by Alhakbani and Alnassar \cite{Alhakbani2022} also identifies DT (CART implementation) as a top-performing model in detecting at-risk students. Finally, KNN is also included, due to its simplicity, as we intend to explore if the classification task can be effectively solved using a simple distance-based method.
 
-Regarding implementation, all models are run using \texttt{sklearn} libraries; for the DT model, we also use the R programming language to implement the C5.0 algorithm, since \texttt{sklearn} only provides the CART implementation. We first run a 5-fold cross-validation on the training set to perform hyperparameter tuning for each model. We then select the best hyperparameters based on the average Macro F1 across folds and train the final model on the entire training set using these hyperparameters.
+Regarding implementation, all models are run using \texttt{sklearn} libraries. We first run a 5-fold cross-validation on the training set to perform hyperparameter tuning for each model. We then select the best hyperparameters based on the average Macro F1 across folds and train the final model on the entire training set using these hyperparameters.
 
 \subsubsection{Large Language Models}
 
