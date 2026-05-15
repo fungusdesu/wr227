@@ -1,0 +1,12 @@
+\section{Discussion}
+\subsection{Interpretation}
+The results highlight the strong performance of traditional machine learning models, particularly Gradient Boosting. In particular, Gradient Boosting predicts students' final results with a balanced accuracy of 0.718. This suggests that students' access to study materials, as well as study time, can strongly affect academic outcomes.
+
+On the other hand, LLMs show consistently weaker performance, with balanced accuracy ranging from 0.297 to 0.562 and Macro F1 ranging from 0.218 to 0.481. One contributing factor is that LLMs can fall back on default heuristics (most commonly predicting ``Fail'' or ``Pass'') when the input is a serialized feature vector rather than natural language. In our experiments, one-shot prompting yields the best balanced accuracy for both models, while five-shot prompting improves Macro F1 for LLaMA.
+
+From a pedagogical standpoint, our study serves as a rudimentary framework for implementing an early-warning system for students. This supports the role of traditional machine learning models for this purpose and illustrates the limitations of general-purpose LLMs in structured classification problems.
+
+\subsection{Threats to Validity}
+Both approaches rely on OULAD, which lacks access to external factors that may affect students' academic performance. This includes, but is not limited to, student mental health and sudden emergencies, which may act as black swan events that reduce predictive accuracy.
+
+There is a risk of models overfitting to historical cohorts, which may reinforce biases that do not generalize to more recent educational settings. Furthermore, students who are aware that their activities are monitored may exhibit different study patterns than those who are not, which can change the models' prediction accuracy.

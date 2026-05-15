@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.21 of 2022/01/12
 %
-\documentclass[runningheads]{llncs}
+\documentclass[runningheads, 10pt]{llncs}
 %
 \usepackage[T1]{fontenc}
 % T1 fonts will be used to generate the final print and online PDFs,
@@ -12,10 +12,27 @@
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{multicol}
 \usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{multicol}
 \setlength{\heavyrulewidth}{1.5pt}
 \setlength{\abovetopsep}{4pt}
+\lstdefinestyle{custompython}{
+	language=Python,
+	basicstyle=\ttfamily\footnotesize,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green},
+	stringstyle=\color{magenta},
+	showstringspaces=false,
+	breaklines=true,
+	breakatwhitespace=false,
+	columns=fullflexible,
+	keepspaces=true,
+	frame=single,
+	tabsize=4
+}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -24,6 +41,7 @@
 % \urlstyle{rm}
 %
 \usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage{hyperref}
 \usepackage[style=lncs, backend=biber, natbib=true]{biblatex}
 \usepackage{lipsum}
@@ -34,16 +52,16 @@
 
 \begin{document}
 %
-\title{Analysis of Different Large Language Models Prompting Techniques' Efficacy in Predicting Students' Required Level of Assistance}
+\title{Can LLMs Generalize to Structured Classification Tasks? A Comparative Analysis with Traditional Machine Learning Models in an Educational Context}
 %
-%\titlerunning{Abbreviated paper title}
+\titlerunning{Can LLMs Generalize to Structured Classification Tasks?}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
 \author{Thien-Lac Quach\inst{1,2}\orcidID{0009-0004-6310-5149}\and
 Ton-Minh-Ky Tran\inst{1,2}\orcidID{0009-0006-5027-2516}}
 %
-\authorrunning{F. Author et al.}
+\authorrunning{Quach \& Tran} 
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -54,20 +72,26 @@ Vietnam National University, Ho Chi Minh City, Vietnam
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-\lipsum[1]
-
-\keywords{}
+While Large Language Models (LLMs) excel in natural language processing, their ability to generalize to structured, non-linguistic tasks remains uncertain. This paper investigates this gap by comparing general-purpose LLMs and traditional machine learning models in a specific educational context--predicting students' final academic outcomes--using the Open University Learning Analytics Dataset (OULAD). To assess baseline generalization without task-specific adaptation, we deliberately exclude fine-tuning and retrieval-augmented generation. Instead, we evaluate two open-weight, small-size LLMs, Qwen-2.5-3B and LLaMA-3-8B, interpreting serialized JSON tabular data using zero-shot, one-shot, and five-shot prompting. These are benchmarked against seven hyperparameter-tuned traditional models, including Random Forest and Gradient Boosting. Our results demonstrate a severe performance gap: traditional ensemble methods significantly outperformed the LLMs, with the best-performing LLM peforming no better than chance. These findings highlight that current general-purpose LLMs struggle to interpret numerical feature vectors, making them currently unsuitable for complex and tabularized data compared to traditional classifiers. Future research should explore domain adaptation techniques or architectural modifications to bridge this modality gap. 
+\keywords{Large Language Models \and Traditional Machine Learning Models \and Classification problem \and Generalization \and Education}
 \end{abstract}
 %
 %
-%
 \newpage
+
+\begin{multicols}{2}
+\sloppy
+\raggedright
 \input{Introduction.tex}
 \input{Background.tex}
 \input{RelatedWorks.tex}
 
 \input{Methodology.tex}
 \input{Results.tex}
+\input{Discussion.tex}
+\input{Conclusion.tex}
+\end{multicols}
+
 
 %
 % ---- Bibliography ----

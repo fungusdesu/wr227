@@ -1,83 +1,201 @@
 \section{Methodology}
 
-\subsection{Dataset Choice and Preprocessing}
+In this section, we explain the methodology used to conduct our research. We first describe the dataset and preprocessing pipeline. Next, we outline the traditional machine learning models and LLMs we employed for our experiments. Finally, we discuss the evaluation metrics and experimental setup.
 
+\subsection{Dataset and Preprocessing}
 
-\subsection{Methodological Pipeline Overview}
+We utilized the Open University Learning Analytics Dataset (OULAD), described in \cite{Kuzilek2017}. This dataset reports the background, behavior, and performance of students in England within a Virtual Learning Environment (VLE). The dataset contains 32,593 records with 20 features, including demographic information, course interactions, and final results. The features include both categorical and numerical data, which required preprocessing before model training. As outlined by its authors, the dataset consists of four modules:
 
-We propose a five-stage pipeline to leverage Large Language Models (LLMs) for predicting students' final examination scores based on their demographic, engagement, and historical performance data. The stages are as follows:
+\begin{description}
+    \item[Student Demographics:] This module includes background information about the students, such as age, gender, and educational as well as socio-economic background. One notable feature is the Index of multiple deprivation (\href{https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025/english-indices-of-deprivation-2025-statistical-release}{IMD}), which is a measure of socio-economic status based on the students' postal codes.
+    \item[Course Registrations:] This module contains information about the courses students are registered for, including course/presentation codes and their lengths. It also includes data on students' registration and unregistration dates.
+    \item[Assessment Results:] This module captures the students' performance in three types of assessments, namely Tutor Marked Assessments (TMA), Computer Marked Assessments (CMA), and Final Exams (Exam), adjusted by weights. It provides insights into their academic progress and outcomes.
+    \item[VLE interactions:] This module records the students' interactions with the Virtual Learning Environment (VLE), including the number of clicks on various pages and resources. It also includes the dates of these interactions, which can be used to analyze engagement patterns over time. This module also provides information on the resources in the VLE.
+\end{description}
 
+\end{multicols}
 
-\subsubsection{Data Integration and Feature Engineering}
+\begin{table}[H]
+    \centering
+    \small
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.18}
+    \begin{tabularx}{\linewidth}{|l|l|c|X|}
+    \hline
+    \textbf{Module} & \textbf{Table} & \textbf{Records} & \textbf{What it contains (main fields)} \\
+    \hline
+    Student Demographics & \texttt{studentInfo} & 32,593 & Student profile and outcome labels: \texttt{id\_student}, demographics (gender, region, education, disability), socio-economic and age bands, prior attempts, studied credits, and \texttt{final\_result}. \\
+    \hline
+    Course Registrations & \texttt{courses} & 22 & Module-presentation metadata: \texttt{code\_module}, \texttt{code\_presentation}, and course \texttt{length}. \\
+    \hline
+    Registrations & \texttt{studentRegistration} & 32,593 & Enrollment timeline per student and presentation: \texttt{id\_student}, \texttt{date\_registration}, and \texttt{date\_unregistration}. \\
+    \hline
+    \end{tabularx}
+    \caption{OULAD: Student and Course Demographics}
+    \label{tab:demographics}
+\end{table}
 
-The foundational stage of our pipeline focuses on consolidating disparate educational data sources into a cohesive, feature-rich dataset. We integrate three primary data tables using unique student and module identifiers: demographic and background data (studentInfo), Virtual Learning Environment (VLE) interaction logs (studentVle), and academic performance outcomes (studentAssessment).
+\begin{table}[H]
+    \centering
+    \small
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.18}
+    \begin{tabularx}{\linewidth}{|l|l|c|X|}
+    \hline
+    \textbf{Module} & \textbf{Table} & \textbf{Records} & \textbf{What it contains (main fields)} \\ \hline
+    Assessment Results & assessments & 206 & Assessment structure: \texttt{code\_module}, \texttt{code\_presentation}, \texttt{id\_student}, \texttt{id\_assessment}, \texttt{assessment\_type}, \texttt{date}, \texttt{weight} \\ \hline
+    Assessment Results & studentAssessment & 173,912 & Student performance: \texttt{id\_student}, \texttt{id\_assessment}, \texttt{is\_banked}, \texttt{date\_submitted}, \texttt{score} \\ \hline
+    \end{tabularx}
+    \caption{OULAD: Assessment Data}
+    \label{tab:assessments}
+\end{table}
 
+\begin{table}[H]
+    \centering
+    \small
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.18}
+    \begin{tabularx}{\linewidth}{|l|l|c|X|}
+    \hline
+    \textbf{Module} & \textbf{Table} & \textbf{Records} & \textbf{What it contains (main fields)} \\ \hline
+    VLE interactions & interactions & 10,655,280 & Clickstream data: \texttt{code\_module}, \texttt{code\_presentation}, \texttt{id\_student}, \texttt{id\_site}, \texttt{date}, \texttt{sum\_click} \\ \hline
+    VLE interactions & vle & 6,364 & VLE resource metadata: \texttt{id\_site}, \texttt{code\_module}, \texttt{code\_presentation}, \texttt{activity\_type}, \texttt{week\_from}, \texttt{week\_to} \\ \hline
+    \end{tabularx}
+    \caption{OULAD: Virtual Learning Environment Interactions}
+    \label{tab:vle}
+\end{table}
 
-Because the VLE logs consist of highly granular, daily interaction data, we perform temporal aggregation to summarize student engagement into meaningful predictive metrics. Specifically, we calculate the total click volume \verb|sum_click| and categorize these interactions by distinct activity types, such as homepage visits, forum participation, and subpage views. Following the feature engineering process, we define our primary prediction target as the numerical final score, a continuous variable ranging from 0 to 100, extracted directly from the studentAssessment table.
+\begin{multicols}{2}
+To correctly and effectively classify the students' final results, preprocessing must be done to merge the tables and create a single table containing all the features, keyed according to the \texttt{id\_student} column. In the next subsection, we describe the preprocessing steps taken to achieve this.
 
-\subsubsection{Scaling via Retrieval Mechanism}
+We divide the tables into three groups: background (studentInfo), performance (studentAssessment and assessments), and behavior (studentVle, vle, and assessments for cutoff construction). We perform the following preprocessing tasks for each group:
 
-To effectively harness historical training data without exceeding the context window limitations of the LLM, we introduce a non-parametric retrieval module. For any given "test" query—representing a student whose score requires prediction—the system utilizes a K-Nearest Neighbors (K-NN) retrieval policy to identify the most relevant historical training instances.
+\begin{description}
+    \item[Background:] We first perform one-hot encoding on the categorical features in the \texttt{studentInfo} table, which include students' gender, region, highest education and disability status. For age and IMD bands, we perform ordinal encoding, as these features have an inherent order.
+    \item[Performance:] We first merge the table \texttt{studentAssessment} and the table \texttt{assessments} on \texttt{id\_assessment}. Missing due dates and scores are explicitly tracked using binary indicators (\texttt{has\_due\_date} and \texttt{score\_missing}), and missing values are imputed using the median. We then engineer timing features from submission behavior, including \texttt{submission\_delay}, late/early flags, and a capped delay variable based on the 1st and 99th percentiles to reduce outlier effects. In addition, we compute weighted performance (\texttt{weighted\_score}) using assessment weights and its min-max normalized version. Finally, we aggregate all assessment records at the student-module-presentation level (\texttt{id\_student}, \texttt{code\_module}, \texttt{code\_presentation}) to produce summary statistics (counts, central tendency, variability, weighted-score totals, lateness ratios, delay average, and missingness ratios), and append assessment-type frequency features via a pivot table.
+    \item[Behavior:] To construct behavior features from VLE interactions, we first derive a module-presentation cutoff date as the latest assessment date and keep only clicks that occur on or before this cutoff, preventing post-assessment leakage. We then merge \texttt{studentVle} with \texttt{vle} to attach \texttt{activity\_type} for each \texttt{id\_site} (with missing types labeled as unknown). Next, we aggregate \texttt{sum\_click} values per student-module-presentation and activity type, and pivot them into wide features (e.g., \texttt{clicks\_forum}, \texttt{clicks\_resource}). Because interactions are processed in chunks for scalability, we finally sum partial chunk-level results to obtain one behavior-feature row per (\texttt{id\_student}, \texttt{code\_module}, \texttt{code\_presentation}).
+\end{description}
 
-To ensure the retrieval process isolates the most predictive exemplars rather than superficially similar rows, we apply targeted feature weighting prior to calculating distance metrics. By utilizing statistical measures such as Pearson Correlation or Predictive Power Score (PPS), we assign higher weights to highly informative attributes. Consequently, strongly correlated features, such as the student's highest level of education \verb|highest_education| and aggregated engagement metrics \verb|sum_click|, disproportionately influence the selection of the supporting k exemplars.
+After preprocessing, we aggregate the three groups of features using \texttt{id\_student} as the key to create the final dataset for modeling. This dataset contains 32,593 records and 72 features, including the students' ID and their final results. The final results are categorized into four classes: \texttt{Distinction}, \texttt{Pass}, \texttt{Fail}, and \texttt{Withdrawn}.
 
-\subsubsection{Data Serialization and Prompt Construction}
+Next, we split the dataset into training and testing sets, with an 80--20 split. We use \texttt{sklearn}'s \texttt{SMOTE} to address class imbalance in the training set, which is a common issue in educational datasets where certain outcomes (e.g., withdrawal) may be more prevalent than others. This increases the size of the training set to 39,556 records, which raises the total dataset size to 46,075 records.
 
-Once the optimal supporting exemplars are retrieved, the tabular data must be translated into a modality comprehensible to the language model. We employ a data serialization process that converts the retrieved tabular rows into a structured text format. Depending on the specific experimental configuration, this is achieved using either Markdown tables or a highly structured prose format (e.g., "Education: A-Level; Clicks: 450; Result: 85"). These formats are chosen for their proven efficacy in preserving the structural integrity of tabular data while facilitating semantic interpretation by the LLM.
+\end{multicols}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL1_input_tables.png}
+    \caption{Preprocessing pipeline (Stage 1): input tables.}
+\end{figure}
 
-The final input is dynamically constructed using a standardized prompt template. This template systematically concatenates the overarching task instructions, the serialized training exemplars (acting as in-context learning shots), and the target test student's query.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL2_feature_preparation.png}
+    \caption{Preprocessing pipeline (Stage 2): feature preparation.}
+\end{figure}
 
-\subsubsection{Inference and Answer Extraction}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL3_prepared_feature_sets.png}
+    \caption{Preprocessing pipeline (Stage 3): prepared feature sets.}
+\end{figure}
 
-During the inference phase, the constructed prompt is processed by the language model. To maintain experimental reproducibility and establish a stable baseline, we primarily utilize a greedy decoding strategy. However, when evaluating advanced ensembling techniques such as Self-Consistency, temperature sampling is applied to generate a diverse set of reasoning paths.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/PP_pipeline_LBL4_final_dataset.png}
+    \caption{Preprocessing pipeline (Stage 4): final dataset construction.}
+\end{figure}
+\begin{multicols}{2}
 
-Because LLMs frequently embed their final numerical predictions within a broader explanatory text or chain-of-thought sequence, an automated answer cleansing protocol is strictly necessary. We implement a dedicated parser utilizing regular expressions (regex) to isolate and extract the final predicted score from the model’s generated output, thereby ensuring clean and strictly numerical data for downstream evaluation.
+\subsection{Modeling}
 
-\subsubsection{Evaluation Framework}
+\subsubsection{Traditional Machine Learning Models}
 
-The final stage of the methodology establishes a rigorous evaluation framework to assess the predictive accuracy and reliability of the pipeline. Model performance is primarily quantified using Mean Absolute Error (MAE) and Normalized Mean Absolute Error (NMAE), which directly measure the magnitude of the distance between the model's predicted scores and the actual ground-truth assessments.
+In our paper, we utilize seven traditional machine learning models as baselines for comparison with large language models. These models include: Random Forest (RF), Support Vector Machine (SVM), Gradient Boosting (GB), Decision Tree (DT), K-Nearest Neighbors (KNN), Extreme Learning Machine (ELM), and Multilayer Perceptron (MLP).
 
-Beyond primary accuracy metrics, we conduct comprehensive robustness checks to validate the stability of the proposed approach. This includes evaluating the model's sensitivity to the ordering of the retrieved exemplars within the prompt. Furthermore, we monitor the label distribution of the retrieved set to ensure that the k selected examples represent a sufficiently balanced and diverse range of target scores, preventing bias toward the majority class.
+The first two models, RF and SVM, are learning methods identified as top classifiers in Delgado et al.'s systematic review of educational data mining \cite{Delgado2014}. The paper also highlights other strong models, such as DT (C5.0 implementation), GB, ELM, and MLP. A review of the OULAD dataset by Alhakbani and Alnassar \cite{Alhakbani2022} also identifies DT (CART implementation) as a top-performing model in detecting at-risk students. Finally, KNN is also included, due to its simplicity, as we intend to explore if the classification task can be effectively solved using a simple distance-based method.
 
-\subsection{Language Models and Prompting Techniques Choice}
+Regarding implementation, all models are run using \texttt{sklearn} libraries; for the DT model, we also use the R programming language to implement the C5.0 algorithm, since \texttt{sklearn} only provides the CART implementation. We first run a 5-fold cross-validation on the training set to perform hyperparameter tuning for each model. We then select the best hyperparameters based on the average Macro F1 across folds and train the final model on the entire training set using these hyperparameters.
 
-\subsubsection{Language Models Choice}
+\subsubsection{Large Language Models}
 
-We utitilize several commercially available Large Language Models (LLMs) to evaluate the effectiveness of our proposed pipeline. The models selected for this study include:
+For baseline LLMs, we utilize two models available on Hugging Face: \texttt{Qwen-2.5-3B} and \texttt{LLaMA-3-8B}. The models are not fine-tuned and were prompted to perform the classification task using zero-shot, one-shot, and five-shot prompting.
 
-\begin{tabular} {|c|c|c|}
+\end{multicols}
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{|l|X|}
 \hline
-\textbf{Model} & \textbf{Provider} & \textbf{Parameters} \\
+\textbf{Model} & \textbf{Hyperparameters} \\
 \hline
-
-GPT-3.5 & OpenAI & 175B \\
+Random Forest & \texttt{n\_estimators=300}, \texttt{min\_samples\_split=5}, \texttt{min\_samples\_leaf=2}, \texttt{max\_features='sqrt'}, \texttt{max\_depth=50}, \texttt{bootstrap=False} \\
 \hline
-GPT-4 & OpenAI & 1T \\
+Decision Tree & \texttt{splitter='best'}, \texttt{min\_samples\_split=20}, \texttt{min\_samples\_leaf=4}, \texttt{max\_features=None}, \texttt{max\_depth=10}, \texttt{criterion='gini'} \\
 \hline
-Gemini Pro & Google DeepMind & 1.5T \\
+Support Vector Machine & \texttt{StandardScaler()} + \texttt{SVC(C=0.7847599703514611, class\_weight='balanced', kernel='rbf', gamma='auto')} \\
 \hline
-Claude 2 & Anthropic & 100B \\
+Gradient Boosting & \texttt{subsample=1.0}, \texttt{n\_estimators=100}, \texttt{min\_samples\_split=2}, \texttt{min\_samples\_leaf=4}, \texttt{max\_features=None}, \texttt{max\_depth=5}, \texttt{learning\_rate=0.2} \\
 \hline
-\end{tabular}
+K-NN & \texttt{StandardScaler()} + \texttt{KNeighborsClassifier (n\_neighbors=7, weights='uniform', p=1, metric='minkowski', leaf\_size=50)} \\
+\hline
+Extreme Learning Machine & \texttt{ELMClassifier(n\_neurons=1000, alpha=0.0001, ufunc='relu')} \\
+\hline
+Multilayer Perceptron & \texttt{MLPClassifier(hidden\_layer\_sizes=(32,), activation='tanh', alpha=0.1, solver='lbfgs', max\_iter=1500, max\_fun=15000)} \\
+\hline
+\end{tabularx}
+\caption{Hyperparameters used for each traditional machine learning model.}
+\label{tab:model_hyperparameters}
+\end{table}
 
-\subsubsection{Prompting Techniques Choice}
+\begin{figure}[H]
+	\centering
+    \includegraphics[width=0.91\textwidth]{code/plots/random_search_cv_py.png}
+    \caption{Cross-validation results for traditional machine learning models.}
+\end{figure}
 
-To maximize the performance of the selected LLMs, we implement a variety of prompting techniques that have been shown to enhance model reasoning and accuracy. The techniques include:
+\begin{lstlisting}[style=custompython,caption={Function to build LLMs prompt}]
+def build_prompt(
+    base_prompt: str,
+    row_dict: dict,
+    few_shot_examples: list[tuple[dict, str]],
+) -> str:
+    current_row_json = json.dumps(row_dict, ensure_ascii=False)
 
-\begin{itemize}
-      \item \textbf{Few-Shot Prompting}: This approach conditions the model on a small number of training examples, referred to as exemplars, which serve as demonstrations of the task. This technique is foundational to ICL and serves as a primary method for providing "train set" context to the model. (Brown et al., 2020).
-      \item \textbf{Zero-Shot Prompting}: Employed as a baseline, this technique provides the model with task instructions but no exemplars, relying entirely on the model's pre-trained internal knowledge to generate a prediction.
-      \item \textbf{Chain-of-Thought (CoT) Prompting}: To improve performance on tasks requiring multi-step logical reasoning, CoT prompting encourages the LLM to articulate a series of intermediate reasoning steps before delivering the final answer. (Wei et al., 2022b).
-      \item \textbf{Zero-Shot-CoT}: This task-agnostic technique elicits reasoning by appending a simple "thought inducer" phrase, such as "Let’s think step by step," to the end of the prompt. (Kojima et al., 2022).
-      \item \textbf{Tabular Chain-of-Thought (Tab-CoT)}: Specifically designed for structured data, this method prompts the model to output its reasoning and final score prediction in the format of a Markdown table, which can improve the internal structuring of the model's logic. (Jin and Lu, 2023).
-      \item \textbf{Retrieval-Augmented In-Context Learning (TabRAG)}: Given the scale of the training set, this method uses a non-parametric retrieval module to identify the k-nearest neighbor training instances most semantically similar to a specific test query. This allows the model to scale to "any-shot" scenarios by utilizing a dynamic support set tailored to each query. (Lewis et al., 2020; Wen et al., 2025).
-      \item \textbf{K-Nearest Neighbor (KNN) Prompting}: This strategy selects exemplars based on their similarity to the test sample to boost prediction accuracy. (Liu et al., 2021).
-      \item \textbf{Self-Consistency}: This decoding strategy moves beyond greedy decoding by sampling multiple diverse reasoning paths from the model and using a majority vote (or average for numerical scores) to select the most consistent final answer. (Wang et al., 2022).
-      \item \textbf{Least-to-Most Prompting}: This technique decomposes the score prediction task into simpler sub-problems (e.g., analyzing background first, then behavior) and solves them sequentially to arrive at the final result. (Zhou et al., 2022a).
-      \item \textbf{Plan-and-Solve Prompting}: An improvement upon Zero-Shot-CoT, this method instructs the model to first devise a plan for how it will solve the problem before carrying it out step-by-step. (Wang et al., 2023f).
-      \item \textbf{Automatic Directed CoT (AutoDiCoT)}: This algorithm automatically generates reasoning chains for the training set and explicitly includes contrastive examples of incorrect reasoning to teach the model which patterns in student behavior should be avoided or ignored.
-\end{itemize}
+    parts = [
+        base_prompt,
+        "Allowed labels: Distinction, Pass, Withdrawn, Fail.",
+        "Infer the label from the pattern in the examples.",
+        "Do not default to the most common example label.",
+        "Output exactly one line in this format:",
+        "LABEL=<one of Distinction, Pass, Withdrawn, Fail>",
+        "Do not output anything else.",
+    ]
 
+    if few_shot_examples:
+        parts.append("")
+        parts.append("Examples:")
 
+        for idx, (example_x, example_y) in enumerate(few_shot_examples, start=1):
+            example_x_json = json.dumps(sanitize_row(example_x), ensure_ascii=False)
+            parts.extend(
+                [
+                    f"Example {idx}:",
+                    f"Student record:\n{example_x_json}",
+                    f"LABEL={example_y}",
+                    "",
+                ]
+            )
 
+    parts.extend(
+        [
+            "Now classify this record:",
+            f"Student record:\n{current_row_json}",
+            "Answer:",
+        ]
+    )
 
+    return "\n".join(parts)
+\end{lstlisting}
+\begin{multicols}{2}
